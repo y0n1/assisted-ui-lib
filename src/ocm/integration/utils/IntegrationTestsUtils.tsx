@@ -1,5 +1,5 @@
 import type { PropsWithChildren, ReactElement } from 'react';
-import type { IntegrationTestsRenderOptions } from './types';
+import type { IntegrationTestsRenderOptions, MakeServerHandlerOptions } from './types';
 import { rest } from 'msw';
 import * as React from 'react';
 import { Provider } from 'react-redux';
@@ -14,20 +14,12 @@ const makeStoreWithPreloadedState = (preloadedState = {}) =>
   configureStore({ reducer: rootReducer, preloadedState });
 
 const makeWithStoreWrapper = (store = makeStoreWithPreloadedState()) => {
-  const WithStoreWrapper = ({ children }: PropsWithChildren<{}>) => (
-    <Provider store={store}>{children}</Provider>
-  );
-
-  return WithStoreWrapper;
+  return ({ children }: PropsWithChildren<{}>) => <Provider store={store}>{children}</Provider>;
 };
 
 const makeWithBrowserRouterWrapper = (context = {}, route = '/') => {
   window.history.pushState(context, WINDOW_TITLE, route);
-  const WithBrowserRouterWrapper = ({ children }: PropsWithChildren<{}>) => (
-    <BrowserRouter>{children}</BrowserRouter>
-  );
-
-  return WithBrowserRouterWrapper;
+  return ({ children }: PropsWithChildren<{}>) => <BrowserRouter>{children}</BrowserRouter>;
 };
 
 const makeAppContainer = (element = 'div') => {
@@ -36,8 +28,6 @@ const makeAppContainer = (element = 'div') => {
 
   return container;
 };
-
-export type HTTPmethod = 'get' | 'post' | 'put' | 'delete' | 'options';
 
 const IntegrationTestsUtils = {
   render(
@@ -70,13 +60,7 @@ const IntegrationTestsUtils = {
     });
   },
 
-  makeServerHandler(options: {
-    once?: boolean;
-    method: HTTPmethod;
-    path: string;
-    statusCode: number;
-    body?: unknown;
-  }) {
+  makeServerHandler(options: MakeServerHandlerOptions) {
     const url = new URL(`${process.env.REACT_APP_API_ROOT}${options.path}`);
     return rest[options.method](url.href, (req, res, ctx) => {
       const resType = options.once ? res.once : res;

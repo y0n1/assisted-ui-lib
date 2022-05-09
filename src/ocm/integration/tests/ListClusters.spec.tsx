@@ -3,21 +3,20 @@ import { screen, within } from '@testing-library/react';
 import mockConsole from 'jest-mock-console';
 import MockServer from '../mocks/MockServer';
 import { AssistedUiRouter } from '../../components';
-import IntegrationTestsUtils, { HTTPmethod } from '../utils/IntegrationTestsUtils';
-import { Cluster, STANDALONE_DEPLOYMENT_ENABLED_FEATURES } from '../../../common';
+import IntegrationTestsUtils from '../utils/IntegrationTestsUtils';
+import { STANDALONE_DEPLOYMENT_ENABLED_FEATURES } from '../../../common';
 import { routeBasePath } from '../../config';
 import userEvent from '@testing-library/user-event';
 import MockClusterGenerator from '../mocks/generators/MockClusterGenerator';
+import { MakeServerHandlerOptions } from '../utils/types';
 
 const API_PATH = `/v1/clusters`;
 
-const setServer = (body: Cluster[], method: HTTPmethod, statusCode: number, path = API_PATH) => {
+const setupServer = (options: MakeServerHandlerOptions) => {
   mockConsole();
   const handler = IntegrationTestsUtils.makeServerHandler({
-    method,
-    path,
-    statusCode,
-    body,
+    ...options,
+    path: API_PATH,
   });
   MockServer.use(handler);
 };
@@ -27,7 +26,7 @@ describe('List clusters', () => {
     it('the refresh button refreshes the clusters list', async () => {
       mockConsole();
       const cluster1 = MockClusterGenerator.generate({ name: 'localhost1' });
-      setServer([cluster1], 'get', 200);
+      setupServer({ body: [cluster1], method: 'get', statusCode: 200 });
       IntegrationTestsUtils.render(
         <AssistedUiRouter allEnabledFeatures={STANDALONE_DEPLOYMENT_ENABLED_FEATURES} />,
       );
@@ -37,7 +36,7 @@ describe('List clusters', () => {
       expect(screen.getByTestId(`cluster-name-${cluster1.name}`)).toBeInTheDocument();
 
       const cluster2 = MockClusterGenerator.generate({ name: 'localhost2' });
-      setServer([cluster1, cluster2], 'get', 200);
+      setupServer({ body: [cluster1, cluster2], method: 'get', statusCode: 200 });
 
       userEvent.click(await screen.findByTestId('clusters-list-refresh-button'));
       expect(await screen.findByTestId(`cluster-name-${cluster1.name}`)).toBeInTheDocument();
@@ -46,7 +45,7 @@ describe('List clusters', () => {
 
     describe('when there are no clusters yet', () => {
       beforeEach(() => {
-        setServer([], 'get', 200);
+        setupServer({ body: [], method: 'get', statusCode: 200 });
         IntegrationTestsUtils.render(
           <AssistedUiRouter allEnabledFeatures={STANDALONE_DEPLOYMENT_ENABLED_FEATURES} />,
         );
@@ -68,7 +67,7 @@ describe('List clusters', () => {
     describe('there are clusters', () => {
       it('can delete a cluster', async () => {
         const cluster = MockClusterGenerator.generate({ name: 'localhost' });
-        setServer([cluster], 'get', 200);
+        setupServer({ body: [cluster], method: 'get', statusCode: 200 });
         IntegrationTestsUtils.render(
           <AssistedUiRouter allEnabledFeatures={STANDALONE_DEPLOYMENT_ENABLED_FEATURES} />,
         );
@@ -88,7 +87,12 @@ describe('List clusters', () => {
         const deleteSubmit = await screen.findByTestId('delete-cluster-submit');
         expect(deleteSubmit).toBeInTheDocument();
 
-        setServer([], 'delete', 200, `${API_PATH}/${cluster.id}`);
+        setupServer({
+          body: [],
+          method: 'delete',
+          statusCode: 200,
+          path: `${API_PATH}/${cluster.id}`,
+        });
 
         userEvent.click(deleteSubmit);
         const emptyStateElement = await screen.findByTestId('empty-state');
@@ -105,7 +109,7 @@ describe('List clusters', () => {
         };
 
         const cluster = MockClusterGenerator.generate(clusterProps);
-        setServer([cluster], 'get', 200);
+        setupServer({ body: [cluster], method: 'get', statusCode: 200 });
         IntegrationTestsUtils.render(
           <AssistedUiRouter allEnabledFeatures={STANDALONE_DEPLOYMENT_ENABLED_FEATURES} />,
         );
@@ -119,8 +123,7 @@ describe('List clusters', () => {
 
         //Find the names of the columns
         const tableProps = ['Name', 'Base domain', 'Version', 'Hosts', 'Created at'];
-        for (let i = 0; i < tableProps.length; i++) {
-          const item = tableProps[i];
+        for (const item of tableProps) {
           const prop = await screen.findByText(item);
           expect(prop).toBeInTheDocument();
         }
@@ -160,7 +163,7 @@ describe('List clusters', () => {
 
   describe('when there is a network failure', () => {
     it('renders the ErrorState component', async () => {
-      setServer([], 'get', 500);
+      setupServer({ body: [], method: 'get', statusCode: 500 });
       IntegrationTestsUtils.render(
         <AssistedUiRouter allEnabledFeatures={STANDALONE_DEPLOYMENT_ENABLED_FEATURES} />,
       );

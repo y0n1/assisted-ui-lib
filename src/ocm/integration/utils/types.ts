@@ -8,3 +8,11 @@ export type IntegrationTestsRenderOptions<C = never> = Omit<RenderOptions, 'wrap
   route?: string;
   routeContext?: C;
 };
+
+export type MakeServerHandlerOptions = {
+  once?: boolean;
+  method: 'get' | 'post' | 'patch' | 'delete' | 'options';
+  path?: string;
+  statusCode: number;
+  body?: unknown;
+};
