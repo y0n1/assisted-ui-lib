@@ -19,7 +19,7 @@ import {
   selectOlmOperators,
   isSNO,
 } from '../../../common';
-import { Cluster } from '../../../common/api/types';
+import { Cluster } from '@openshift-assisted-ui/assisted-service-types';
 import ClusterHostsTable from '../hosts/ClusterHostsTable';
 import ClusterToolbar from '../clusters/ClusterToolbar';
 import { downloadClusterInstallationLogs, getClusterDetailId } from './utils';

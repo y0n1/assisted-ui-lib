@@ -2,7 +2,7 @@ import React, { useCallback, useEffect } from 'react';
 import { useFormikContext } from 'formik';
 import { Alert, AlertVariant, Checkbox, Grid, Tooltip } from '@patternfly/react-core';
 import { VirtualIPControlGroup, VirtualIPControlGroupProps } from './VirtualIPControlGroup';
-import { Cluster } from '../../../../common/api/types';
+import { Cluster } from '@openshift-assisted-ui/assisted-service-types';
 import {
   FeatureSupportLevelData,
   useFeatureSupportLevel,

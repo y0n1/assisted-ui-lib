@@ -1,5 +1,5 @@
 import { InfraEnvsService } from '.';
-import { Cluster } from '../../common/api/types';
+import { Cluster } from '@openshift-assisted-ui/assisted-service-types';
 import { OcmClusterType } from '../components/AddHosts/types';
 import { ClustersAPI, HostsAPI } from './apis';
 

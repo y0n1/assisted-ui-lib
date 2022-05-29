@@ -1,4 +1,4 @@
-import { FeatureSupportLevels } from '../../../common/api/types';
+import { FeatureSupportLevels } from '@openshift-assisted-ui/assisted-service-types';
 import { client } from '../../api/axiosClient';
 
 const FeatureSupportLevelsAPI = {

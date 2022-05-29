@@ -10,7 +10,7 @@ import {
   PlatformType,
   PreflightHardwareRequirements,
   PresignedUrl,
-} from '../../../common/api/types';
+} from '@openshift-assisted-ui/assisted-service-types';
 import { AxiosResponse } from 'axios';
 import { ClustersAPIGetPresignedOptions } from './types';
 

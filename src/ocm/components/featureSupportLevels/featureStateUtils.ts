@@ -4,7 +4,7 @@ import {
   OpenshiftVersionOptionType,
   SupportLevel,
 } from '../../../common/types';
-import { Cluster } from '../../../common/api/types';
+import { Cluster } from '@openshift-assisted-ui/assisted-service-types';
 import { isArmArchitecture, isSNO } from '../../../common/selectors/clusterSelectors';
 
 const isArmSupported = (versionName: string, versionOptions: OpenshiftVersionOptionType[]) => {

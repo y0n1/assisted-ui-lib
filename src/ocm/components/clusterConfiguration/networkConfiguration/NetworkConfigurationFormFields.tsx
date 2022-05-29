@@ -1,7 +1,7 @@
 import React from 'react';
 import { Grid } from '@patternfly/react-core';
 import NetworkConfiguration, { NetworkConfigurationProps } from './NetworkConfiguration';
-import { InfraEnv } from '../../../../common/api/types';
+import { InfraEnv } from '@openshift-assisted-ui/assisted-service-types';
 import { SecurityFields } from '../../../../common/components';
 
 type NetworkConfigurationFormFieldsProps = NetworkConfigurationProps & {

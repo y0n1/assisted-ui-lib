@@ -6,7 +6,7 @@ import {
   REDHAT_CONSOLE_OPENSHIFT,
   canDownloadKubeconfig,
 } from '../../../common';
-import { Cluster } from '../../../common/api/types';
+import { Cluster } from '@openshift-assisted-ui/assisted-service-types';
 import { getClusterDetailId } from './utils';
 
 import { useDefaultConfiguration } from '../clusterConfiguration/ClusterDefaultConfigurationContext';

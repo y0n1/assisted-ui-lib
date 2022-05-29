@@ -1,7 +1,7 @@
 import { Alert, AlertActionLink, Text, TextContent } from '@patternfly/react-core';
 import { downloadClusterInstallationLogs } from '../../../ocm/components/clusterDetail/utils';
 import { RenderIf, toSentence } from '../../../common/components/ui';
-import { Cluster, MonitoredOperator } from '../../../common/api/types';
+import { Cluster, MonitoredOperator } from '@openshift-assisted-ui/assisted-service-types';
 import React from 'react';
 import { pluralize } from 'humanize-plus';
 import { useModalDialogsContext } from '../../../ocm/components/hosts/ModalDialogsContext';

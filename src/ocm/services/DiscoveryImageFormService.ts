@@ -3,7 +3,7 @@ import {
   InfraEnvUpdateParams,
   Cluster,
   InfraEnv,
-} from '../../common/api/types';
+} from '@openshift-assisted-ui/assisted-service-types';
 import { ClustersAPI, InfraEnvsAPI } from './apis';
 import { DiscoveryImageFormValues } from '../../common/components/clusterConfiguration';
 

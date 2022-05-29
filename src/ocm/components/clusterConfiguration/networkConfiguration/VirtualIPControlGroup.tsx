@@ -1,7 +1,7 @@
 import React from 'react';
 import { useFormikContext } from 'formik';
 import { Spinner, Alert, AlertVariant, Tooltip } from '@patternfly/react-core';
-import { Cluster } from '../../../../common/api/types';
+import { Cluster } from '@openshift-assisted-ui/assisted-service-types';
 import { stringToJSON } from '../../../../common/api/utils';
 import { HostSubnets, NetworkConfigurationValues, ValidationsInfo } from '../../../../common/types';
 import { CheckboxField, FormikStaticField, InputField } from '../../../../common/components/ui';

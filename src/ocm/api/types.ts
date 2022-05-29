@@ -1,6 +1,6 @@
 import { AxiosError } from 'axios';
 import { isAxiosError } from './axiosExtensions';
-import { Error as APIError, InfraError } from '../../common/api/types';
+import { Error as APIError, InfraError } from '@openshift-assisted-ui/assisted-service-types';
 
 export type APIErrorMixin = InfraError & APIError;
 export type AIAxiosErrorType = AxiosError<APIErrorMixin, APIErrorMixin>;

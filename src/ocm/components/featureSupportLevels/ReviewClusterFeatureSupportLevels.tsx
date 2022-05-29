@@ -10,7 +10,7 @@ import {
 } from '../../../common/types';
 import { TECH_SUPPORT_LEVEL_LINK } from '../../../common/config/constants';
 import ExternalLink from '../../../common/components/ui/ExternalLink';
-import { Cluster } from '../../../common/api/types';
+import { Cluster } from '@openshift-assisted-ui/assisted-service-types';
 import { useFeatureSupportLevel } from '../../../common/components/featureSupportLevels';
 import { DetailItem } from '../../../common';
 import { getLimitedFeatureSupportLevels } from '../../../common/components/featureSupportLevels/utils';

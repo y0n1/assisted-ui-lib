@@ -1,7 +1,7 @@
 import React from 'react';
 import { ButtonVariant, FormGroup, Tooltip } from '@patternfly/react-core';
 import { useFormikContext } from 'formik';
-import { Cluster } from '../../../../common/api/types';
+import { Cluster } from '@openshift-assisted-ui/assisted-service-types';
 import { NetworkConfigurationValues } from '../../../../common/types';
 import { DUAL_STACK, IPV4_STACK, NO_SUBNET_SET } from '../../../../common/config/constants';
 import { getFieldId } from '../../../../common/components/ui/formik/utils';

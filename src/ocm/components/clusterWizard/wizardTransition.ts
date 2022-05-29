@@ -1,4 +1,4 @@
-import { Cluster } from '../../../common/api/types';
+import { Cluster } from '@openshift-assisted-ui/assisted-service-types';
 import {
   getAllClusterWizardSoftValidationIds,
   getWizardStepClusterStatus,

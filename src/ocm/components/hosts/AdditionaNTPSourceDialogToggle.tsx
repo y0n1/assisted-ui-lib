@@ -3,7 +3,7 @@ import { AlertActionLink } from '@patternfly/react-core';
 import { useModalDialogsContext } from './ModalDialogsContext';
 import { HostDetail } from '../../../common/components/hosts/HostRowDetail';
 import { ExpandComponentProps } from '../../../common/components/hosts/AITable';
-import { Host } from '../../../common/api';
+import { Host } from '@openshift-assisted-ui/assisted-service-types';
 
 export const AdditionalNTPSourcesDialogToggle: React.FC = () => {
   const {

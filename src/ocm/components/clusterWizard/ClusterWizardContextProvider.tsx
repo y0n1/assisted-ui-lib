@@ -7,7 +7,7 @@ import {
 } from './wizardTransition';
 import { HostsNetworkConfigurationType } from '../../services';
 import { defaultWizardSteps, staticIpFormViewSubSteps } from './constants';
-import { Cluster, InfraEnv } from '../../../common/api';
+import { Cluster, InfraEnv } from '@openshift-assisted-ui/assisted-service-types';
 import { StaticIpView } from '../clusterConfiguration/staticIp/data/dataTypes';
 import { getStaticIpInfo } from '../clusterConfiguration/staticIp/data/fromInfraEnv';
 import isEqual from 'lodash/isEqual';

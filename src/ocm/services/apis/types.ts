@@ -1,4 +1,4 @@
-import { LogsType } from '../../../common/api/types';
+import { LogsType } from '@openshift-assisted-ui/assisted-service-types';
 
 export type ClustersAPIGetPresignedOptions = {
   clusterId: string;
