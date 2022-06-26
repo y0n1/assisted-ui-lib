@@ -9,9 +9,9 @@ import {
   global_danger_color_100 as dangerColor,
 } from '@patternfly/react-tokens';
 import { OPENSHIFT_LIFE_CYCLE_DATES_LINK } from '../../config';
-import { OpenshiftVersionOptionType } from '../../types';
+import { hasProp, OpenshiftVersionOptionType } from '../../types';
 import { SelectField } from '../ui';
-import openshiftVersionData from '../../../ocm/data/openshiftVersionsData.json';
+import OCPLifeCycleDates, { OCPVersions } from '../../../ocm/data/OCPLifeCycleDates';
 import { diffInDaysBetweenDates } from '../../sevices/DateAndTime';
 
 const OpenShiftLifeCycleDatesLink = () => (
@@ -41,15 +41,17 @@ const getOpenshiftVersionHelperText =
           <OpenShiftLifeCycleDatesLink />
         </>
       );
-    } else if (
-      selectedVersionValue in openshiftVersionData['versions'] &&
-      diffInDaysBetweenDates(openshiftVersionData['versions'][selectedVersionValue]) <= 30
-    ) {
+    } else if (hasProp(OCPLifeCycleDates.byVersions, selectedVersionValue)) {
+      const maintenanceSupportDate =
+        OCPLifeCycleDates.byVersions[selectedVersionValue as OCPVersions].ms;
+      if (diffInDaysBetweenDates(maintenanceSupportDate) > 30) {
+        helperTextComponent = null;
+      }
       helperTextComponent = (
         <>
           <ExclamationTriangleIcon color={warningColor.value} size="sm" />
           &nbsp;
-          {`Full support for this version ends on ${openshiftVersionData['versions'][selectedVersionValue]} and won't be available as an installation option afterwards.`}
+          {`Full support for this version ends on ${maintenanceSupportDate} and won't be available as an installation option afterwards.`}
           &nbsp;
           <OpenShiftLifeCycleDatesLink />
         </>
