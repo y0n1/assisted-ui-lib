@@ -1,0 +1,61 @@
+name: 'Deploy to quay.io on push to specific branches'
+
+on:
+  push:
+    branches:
+      - 'master'
+      - 'releases/**'
+      - 'features/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: --max-old-space-size=8192
+    steps:
+      - name: Checkout assisted-ui-lib
+        uses: actions/checkout@v3
+        with:
+          path: assisted-ui-lib
+
+      - name: Checkout assisted-ui
+        uses: actions/checkout@v3
+        with:
+          repository: openshift-assisted/assisted-ui
+          path: assisted-ui
+
+      - uses: actions/setup-node@v3
+        with:
+          cache: yarn
+          node-version: '12'
+
+      - name: Build assisted-ui-lib
+        run: |
+          cd $GITHUB_WORKSPACE/assisted-ui-lib
+          yarn install --frozen-lockfile
+          yarn build
+          yarn pack -f $GITHUB_WORKSPACE/openshift-assisted-ui-lib-v0.0.0.tgz
+
+      - name: Build assisted-ui
+        run: |
+          cd $GITHUB_WORKSPACE/assisted-ui
+          yarn add file:$GITHUB_WORKSPACE/openshift-assisted-ui-lib-v0.0.0.tgz
+          yarn build
+
+      - name: Login to Quay.io
+        uses: docker/login-action@v2
+        with:
+          registry: quay.io
+          username: ${{ secrets.QUAYIO_EDGE_INFRA_USERNAME }}
+          password: ${{ secrets.QUAYIO_EDGE_INFRA_PASSWORD }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        env:
+          REACT_APP_GIT_SHA: ${{ github.sha }}
+          REACT_APP_VERSION:
+        with:
+          context: .
+          push: true
+          build-args: REACT_APP_GIT_SHA,REACT_APP_VERSION
+          tags: 'edge-infrastructure/assisted-installer-ui:latest','edge-infrastructure/assisted-installer-ui:${{ github.sha }}'
