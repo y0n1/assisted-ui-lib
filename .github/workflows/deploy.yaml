@@ -5,15 +5,20 @@ on:
     branches:
       - master
       - releases/*
+      - chores/*
 
 jobs:
-  main:
-    if: ${{ github.repository_owner == 'jkilzi' }}
-    name: Deploy
+  build:
+    if: ${{ github.repositoryUrl == 'jkilzi/assisted-ui-lib' }}
+    name: Build
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: --max-old-space-size=8192
     steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '12'
+
       - name: Checkout assisted-ui-lib
         uses: actions/checkout@v3
         with:
@@ -25,98 +30,47 @@ jobs:
           repository: openshift-assisted/assisted-ui
           path: assisted-ui
 
-      - name: TEST
+      - name: Build assisted-ui-lib
+        working-directory: ./assisted-ui-lib
         run: |
-          pwd
-          ll
+          yarn install --frozen-lockfile
+          node ./scripts/esbuild/prod.js
+          yarn pack -f $GITHUB_WORKSPACE/openshift-assisted-ui-lib-v0.0.0.tgz
 
-#      - uses: actions/setup-node@v3
-#        with:
-#          cache: yarn
-#          node-version: '12'
-#
-#      - name: Build assisted-ui-lib
-#        run: |
-#          cd $GITHUB_WORKSPACE/assisted-ui-lib
-#          yarn install --frozen-lockfile
-#          yarn build
-#          yarn pack -f $GITHUB_WORKSPACE/openshift-assisted-ui-lib-v0.0.0.tgz
-#
-#
-#      - name: Build assisted-ui
-#        run: |
-#          cd $GITHUB_WORKSPACE/assisted-ui
-#          yarn add file:$GITHUB_WORKSPACE/openshift-assisted-ui-lib-v0.0.0.tgz
-#          yarn build
-#
-#
-#      - name: Login to Quay.io
-#        uses: docker/login-action@v2
-#        with:
-#          registry: quay.io
-#          username: ${{ secrets.QUAYIO_EDGE_INFRA_USERNAME }}
-#          password: ${{ secrets.QUAYIO_EDGE_INFRA_PASSWORD }}
-#
-#      - name: Build and push
-#        uses: docker/build-push-action@v3
-#        env:
-#          REACT_APP_GIT_SHA: ${{ github.sha }}
-#          REACT_APP_VERSION:
-#        with:
-#          context: .
-#          push: true
-#          build-args: REACT_APP_GIT_SHA,REACT_APP_VERSION
-#          tags: 'edge-infrastructure/assisted-installer-ui:latest','edge-infrastructure/assisted-installer-ui:${{ github.sha }}'
+      - name: Build assisted-ui
+        working-directory: ./assisted-ui
+        run: |
+          yarn add file:$GITHUB_WORKSPACE/openshift-assisted-ui-lib-v0.0.0.tgz
+          yarn build
 
-#  deploy_openshift-assisted:
-#    if: ${{ github.repository == 'openshift-assisted/assisted-ui-lib' }}
-#    runs-on: ubuntu-latest
-#    env:
-#      NODE_OPTIONS: --max-old-space-size=8192
-#    steps:
-#      - name: Checkout assisted-ui-lib
-#        uses: actions/checkout@v3
-#        with:
-#          path: assisted-ui-lib
-#
-#      - name: Checkout assisted-ui
-#        uses: actions/checkout@v3
-#        with:
-#          repository: openshift-assisted/assisted-ui
-#          path: assisted-ui
-#
-#      - uses: actions/setup-node@v3
-#        with:
-#          cache: yarn
-#          node-version: '12'
-#
-#      - name: Build assisted-ui-lib
+#      - name: Move into assisted-ui
 #        run: |
-#          cd $GITHUB_WORKSPACE/assisted-ui-lib
-#          yarn install --frozen-lockfile
-#          yarn build
-#          yarn pack -f $GITHUB_WORKSPACE/openshift-assisted-ui-lib-v0.0.0.tgz
-#
-#      - name: Build assisted-ui
-#        run: |
-#          cd $GITHUB_WORKSPACE/assisted-ui
-#          yarn add file:$GITHUB_WORKSPACE/openshift-assisted-ui-lib-v0.0.0.tgz
-#          yarn build
-#
-#      - name: Login to Quay.io
-#        uses: docker/login-action@v2
-#        with:
-#          registry: quay.io
-#          username: ${{ secrets.QUAYIO_EDGE_INFRA_USERNAME }}
-#          password: ${{ secrets.QUAYIO_EDGE_INFRA_PASSWORD }}
-#
-#      - name: Build and push
-#        uses: docker/build-push-action@v3
+#          cd ./assisted-ui
+#          pwd
+
+#      - name: Build image
+#        id: build-image
 #        env:
-#          REACT_APP_GIT_SHA: ${{ github.sha }}
-#          REACT_APP_VERSION:
+#          REACT_APP_GIT_SHA: ${GITHUB_SHA:0:8}
+#          REACT_APP_VERSION: ${{ github.ref_name }}
+#        uses: redhat-actions/buildah-build@v2
 #        with:
-#          context: .
-#          push: true
-#          build-args: REACT_APP_GIT_SHA,REACT_APP_VERSION
-#          tags: 'edge-infrastructure/assisted-installer-ui:latest','edge-infrastructure/assisted-installer-ui:${{ github.sha }}'
+#          image: assisted-installer-ui
+#          tags: >
+#            $REACT_APP_GIT_SHA
+#            $REACT_APP_VERSION
+#            latest
+#          build-args: |
+#            REACT_APP_GIT_SHA=$REACT_APP_GIT_SHA
+#            REACT_APP_VERSION=$REACT_APP_VERSION
+#          containerfiles: Dockerfile
+
+#      - name: Push to Quay.io
+#        id: push-to-quay
+#        uses: redhat-actions/push-to-registry@v2.6
+#        with:
+#          image: ${{ steps.build-image.outputs.image }}
+#          tags: ${{ steps.build-image.outputs.tags }}
+#          registry: quay.io/jkilzi
+#          username: ${{ secrets.QUAYIO_JKILZI_USERNAME }}
+#          password: ${{ secrets.QUAYIO_JKILZI_PASSWORD }}
